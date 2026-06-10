@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PublicPesa - Follow the Money</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #020817;
+            color: #e2e8f0;
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: #020817 !important;
+            border-bottom: 3px solid;
+            border-image: linear-gradient(90deg, #006600, #000000, #bb0000) 1;
+            padding: 16px 32px;
+        }
+        .navbar-brand {
+            font-family: 'Orbitron', monospace;
+            font-weight: 900;
+            font-size: 1.4rem;
+            background: linear-gradient(90deg, #006600, #ffffff, #bb0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 3px;
+        }
+        .tagline {
+            font-family: 'Rajdhani', sans-serif;
+            color: #ffffff66;
+            font-size: 0.85rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+        .kenya-bar {
+            height: 5px;
+            background: linear-gradient(90deg, #006600 33%, #000000 33%, #000000 36%, #ffffff 36%, #ffffff 64%, #000000 64%, #000000 67%, #bb0000 67%);
+        }
+        .hero {
+            text-align: center;
+            padding: 60px 20px 30px;
+        }
+        .hero h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.8rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, #006600, #ffffff, #bb0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        .hero p {
+            color: #64748b;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+        }
+        .search-wrapper {
+            max-width: 500px;
+            margin: 30px auto;
+        }
+        .search-wrapper input {
+            width: 100%;
+            padding: 14px 24px;
+            background: #0f172a;
+            border: 1px solid #006600;
+            border-radius: 50px;
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .search-wrapper input:focus {
+            border-color: #00ff88;
+            box-shadow: 0 0 20px #00660033;
+        }
+        .search-wrapper input::placeholder { color: #334155; }
+        .county-card {
+            background: linear-gradient(135deg, #0a1628, #0f2040);
+            border: 1px solid #1e3a5f;
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+        }
+        .county-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 5px; height: 100%;
+            background: linear-gradient(180deg, #006600, #000000, #bb0000);
+        }
+        .county-card::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 100%; height: 3px;
+            background: linear-gradient(90deg, transparent, #006600, #bb0000);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .county-card:hover::after { opacity: 1; }
+        .county-card:hover {
+            transform: translateY(-6px);
+            border-color: #00660044;
+            box-shadow: 0 15px 40px #00660011, 0 0 0 1px #00660022;
+        }
+        .county-name {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 18px;
+            letter-spacing: 1px;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .stat-label {
+            color: #64748b;
+            font-size: 0.72rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .stat-value {
+            color: #00ff88;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        .stat-value.spent { color: #60a5fa; }
+        .progress-wrapper { margin-top: 16px; }
+        .progress {
+            height: 8px;
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        .progress-bar {
+            border-radius: 10px;
+            transition: width 1.5s ease;
+        }
+        .progress-bar.bg-success { box-shadow: 0 0 8px #006600; }
+        .progress-bar.bg-warning { box-shadow: 0 0 8px #f59e0b; }
+        .progress-bar.bg-danger { box-shadow: 0 0 8px #bb0000; }
+        .pct-text {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .projects-badge {
+            display: inline-block;
+            background: #00660011;
+            border: 1px solid #00660044;
+            color: #00ff88;
+            border-radius: 20px;
+            padding: 3px 14px;
+            font-size: 0.75rem;
+            margin-top: 14px;
+            letter-spacing: 1px;
+        }
+        .grid-label {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.65rem;
+            color: #334155;
+            letter-spacing: 4px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .stats-banner {
+            background: #0a1628;
+            border-top: 1px solid #1e293b;
+            border-bottom: 1px solid #1e293b;
+            padding: 20px 0;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+        .stats-banner .stat-num {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, #006600, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stats-banner .stat-desc {
+            color: #64748b;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Kenya flag stripe -->
+<div class="kenya-bar"></div>
+
+<!-- Navbar -->
+<nav class="navbar navbar-dark navbar-expand-lg">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Coat_of_arms_of_Kenya.svg/120px-Coat_of_arms_of_Kenya.svg.png"
+         height="48" style="margin-right: 14px;">
+    <span class="navbar-brand">PUBLICPESA</span>
+    <span class="tagline ms-3">// Follow the money</span>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+    <h1>Kenya Budget Tracker</h1>
+    <p>Real data. Full transparency. 47 counties.</p>
+    <div class="search-wrapper">
+        <input type="text" id="searchInput" placeholder="🔍  Search a county..." onkeyup="filterCounties()">
+    </div>
+</div>
+
+<!-- Stats Banner -->
+<div class="stats-banner">
+    <div class="container">
+        <div class="row">
+            <div class="col-4">
+                <div class="stat-num">47</div>
+                <div class="stat-desc">Counties</div>
+            </div>
+            <div class="col-4">
+                <div class="stat-num">KES 370B</div>
+                <div class="stat-desc">Total Budget</div>
+            </div>
+            <div class="col-4">
+                <div class="stat-num">100%</div>
+                <div class="stat-desc">Transparent</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Counties Grid -->
+<div class="container pb-5">
+    <p class="grid-label">— COUNTY EXPENDITURE OVERVIEW —</p>
+    <div class="row" id="countiesGrid">
+        {% for county in counties %}
+        {% with pct=county.percentage_spent %}
+        <div class="col-md-4 mb-4 county-item">
+            <div class="county-card">
+                <div class="county-name">📍 {{ county.name|upper }}</div>
+                <div class="stat-row">
+                    <span class="stat-label">Budget Allocated</span>
+                    <span class="stat-value">KES {{ county.budget_allocated|floatformat:0 }}</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Amount Spent</span>
+                    <span class="stat-value spent">KES {{ county.amount_spent|floatformat:0 }}</span>
+                </div>
+                <div class="progress-wrapper">
+                    <div class="progress">
+                        <div class="progress-bar {% if pct > 80 %}bg-danger{% elif pct > 50 %}bg-warning{% else %}bg-success{% endif %}"
+                             style="width: {{ pct }}%">
+                        </div>
+                    </div>
+                    <div class="pct-text">
+                        <span>0%</span>
+                        <span>{{ pct|floatformat:1 }}% spent</span>
+                        <span>100%</span>
+                    </div>
+                </div>
+                <span class="projects-badge">⚡ {{ county.projects_count }} Active Projects</span>
+            </div>
+        </div>
+        {% endwith %}
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Kenya flag stripe bottom -->
+<div class="kenya-bar"></div>
+
+<script>
+function filterCounties() {
+    const input = document.getElementById('searchInput').value.toLowerCase();
+    const items = document.querySelectorAll('.county-item');
+    items.forEach(item => {
+        const name = item.querySelector('.county-name').textContent.toLowerCase();
+        item.style.display = name.includes(input) ? '' : 'none';
+    });
+}
+</script>
+
+</body>
+</html>
