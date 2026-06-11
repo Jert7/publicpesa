@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ county.name }} — PublicPesa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #020817; color: #e2e8f0; font-family: 'Rajdhani', sans-serif; }
+        .kenya-bar { height: 5px; background: linear-gradient(90deg, #006600 33%, #000000 33%, #000000 36%, #ffffff 36%, #ffffff 64%, #000000 64%, #000000 67%, #bb0000 67%); }
+        .navbar { background: #020817 !important; border-bottom: 3px solid; border-image: linear-gradient(90deg, #006600, #000000, #bb0000) 1; padding: 16px 32px; }
+        .navbar-brand { font-family: 'Orbitron', monospace; font-weight: 900; font-size: 1.4rem; background: linear-gradient(90deg, #006600, #ffffff, #bb0000); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 3px; }
+        .back-btn { color: #00ff88; text-decoration: none; font-size: 0.85rem; letter-spacing: 2px; }
+        .back-btn:hover { color: #fff; }
+        .county-hero { text-align: center; padding: 50px 20px 30px; }
+        .county-hero h1 { font-family: 'Orbitron', monospace; font-size: 2.2rem; font-weight: 900; background: linear-gradient(90deg, #006600, #ffffff, #bb0000); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stat-card { background: linear-gradient(135deg, #0a1628, #0f2040); border: 1px solid #1e3a5f; border-radius: 16px; padding: 24px; text-align: center; }
+        .stat-card .num { font-family: 'Orbitron', monospace; font-size: 1.4rem; font-weight: 900; color: #00ff88; }
+        .stat-card .num.spent { color: #60a5fa; }
+        .stat-card .num.gap { color: #f59e0b; }
+        .stat-card .label { color: #64748b; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; margin-top: 6px; }
+        .chart-wrapper { background: linear-gradient(135deg, #0a1628, #0f2040); border: 1px solid #1e3a5f; border-radius: 16px; padding: 30px; margin: 30px 0; }
+        .section-title { font-family: 'Orbitron', monospace; font-size: 0.8rem; letter-spacing: 4px; color: #334155; text-transform: uppercase; margin: 40px 0 20px; }
+        .data-table { background: #0a1628; border: 1px solid #1e3a5f; border-radius: 12px; overflow: hidden; }
+        .data-table table { width: 100%; border-collapse: collapse; }
+        .data-table th { background: #0f2040; color: #64748b; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; padding: 14px 16px; }
+        .data-table td { padding: 14px 16px; border-top: 1px solid #1e293b; font-size: 0.9rem; }
+        .badge-active { background: #00660022; color: #00ff88; border: 1px solid #00660044; border-radius: 20px; padding: 3px 12px; font-size: 0.75rem; }
+        .badge-completed { background: #60a5fa22; color: #60a5fa; border: 1px solid #60a5fa44; border-radius: 20px; padding: 3px 12px; font-size: 0.75rem; }
+        .badge-stalled { background: #f59e0b22; color: #f59e0b; border: 1px solid #f59e0b44; border-radius: 20px; padding: 3px 12px; font-size: 0.75rem; }
+        .badge-cancelled { background: #bb000022; color: #ff6b6b; border: 1px solid #bb000044; border-radius: 20px; padding: 3px 12px; font-size: 0.75rem; }
+    </style>
+</head>
+<body>
+
+<div class="kenya-bar"></div>
+
+<nav class="navbar navbar-dark">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Coat_of_arms_of_Kenya.svg/120px-Coat_of_arms_of_Kenya.svg.png" height="48" style="margin-right: 14px;">
+    <span class="navbar-brand">PUBLICPESA</span>
+    <a href="{% url 'homepage' %}" class="back-btn ms-auto">← BACK TO COUNTIES</a>
+</nav>
+
+<div class="county-hero">
+    <h1>📍 {{ county.name|upper }}</h1>
+    <p style="color: #64748b; letter-spacing: 2px; margin-top: 8px;">BUDGET TRANSPARENCY DASHBOARD</p>
+</div>
+
+<!-- Summary Stats -->
+<div class="container mb-4">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="num">KES {{ county.budget_allocated|floatformat:0 }}</div>
+                <div class="label">Budget Allocated</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="num spent">KES {{ county.amount_spent|floatformat:0 }}</div>
+                <div class="label">Amount Spent</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="num gap">{{ county.percentage_spent|floatformat:1 }}%</div>
+                <div class="label">Budget Used</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart -->
+<div class="container">
+    <div class="chart-wrapper">
+        <canvas id="budgetChart" height="100"></canvas>
+    </div>
+</div>
+
+<!-- Tenders -->
+<div class="container">
+    <p class="section-title">— Tenders Awarded —</p>
+    <div class="data-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Tender Name</th>
+                    <th>Company</th>
+                    <th>Amount (KES)</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tender in tenders %}
+                <tr>
+                    <td>{{ tender.name }}</td>
+                    <td>{{ tender.company_awarded }}</td>
+                    <td>{{ tender.amount|floatformat:0 }}</td>
+                    <td>{{ tender.date_awarded }}</td>
+                    <td><span class="badge-{{ tender.status }}">{{ tender.status|upper }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Projects -->
+<div class="container pb-5">
+    <p class="section-title">— Active Projects —</p>
+    <div class="data-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Project Name</th>
+                    <th>Location</th>
+                    <th>Cost (KES)</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in projects %}
+                <tr>
+                    <td>{{ project.name }}</td>
+                    <td>{{ project.location }}</td>
+                    <td>{{ project.cost|floatformat:0 }}</td>
+                    <td><span class="badge-{{ project.status }}">{{ project.status|upper }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="kenya-bar"></div>
+
+<script>
+    const ctx = document.getElementById('budgetChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Budget Allocated', 'Amount Spent'],
+            datasets: [{
+                label: '{{ county.name }} Budget vs Expenditure',
+                data: [{{ county.budget_allocated }}, {{ county.amount_spent }}],
+                backgroundColor: ['#00660066', '#60a5fa66'],
+                borderColor: ['#006600', '#60a5fa'],
+                borderWidth: 2,
+                borderRadius: 8,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { labels: { color: '#e2e8f0', font: { family: 'Rajdhani' } } }
+            },
+            scales: {
+                y: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
+                x: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

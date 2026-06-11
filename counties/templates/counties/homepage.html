@@ -250,7 +250,8 @@
         {% for county in counties %}
         {% with pct=county.percentage_spent %}
         <div class="col-md-4 mb-4 county-item">
-            <div class="county-card">
+            <a href="{% url 'county_detail' county.id %}" style="text-decoration: none; color: inherit;">
+<div class="county-card">
                 <div class="county-name">📍 {{ county.name|upper }}</div>
                 <div class="stat-row">
                     <span class="stat-label">Budget Allocated</span>
@@ -274,6 +275,8 @@
                 </div>
                 <span class="projects-badge">⚡ {{ county.projects_count }} Active Projects</span>
             </div>
+       </div>
+        </a>
         </div>
         {% endwith %}
         {% endfor %}
