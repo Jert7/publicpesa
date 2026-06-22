@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ county.name }} — PublicPesa</title>
+    <title>Nairobi — PublicPesa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -22,7 +22,15 @@
         .stat-card .num.spent { color: #60a5fa; }
         .stat-card .num.gap { color: #f59e0b; }
         .stat-card .label { color: #64748b; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; margin-top: 6px; }
-        .chart-wrapper { background: linear-gradient(135deg, #0a1628, #0f2040); border: 1px solid #1e3a5f; border-radius: 16px; padding: 30px; margin: 30px 0; }
+
+        /* Chart grid */
+        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 30px 0; }
+        .charts-grid .chart-full { grid-column: 1 / -1; }
+        @media (max-width: 768px) { .charts-grid { grid-template-columns: 1fr; } .charts-grid .chart-full { grid-column: 1; } }
+
+        .chart-wrapper { background: linear-gradient(135deg, #0a1628, #0f2040); border: 1px solid #1e3a5f; border-radius: 16px; padding: 28px; }
+        .chart-wrapper h3 { font-family: 'Orbitron', monospace; font-size: 0.7rem; letter-spacing: 3px; color: #334155; text-transform: uppercase; margin-bottom: 20px; }
+
         .section-title { font-family: 'Orbitron', monospace; font-size: 0.8rem; letter-spacing: 4px; color: #334155; text-transform: uppercase; margin: 40px 0 20px; }
         .data-table { background: #0a1628; border: 1px solid #1e3a5f; border-radius: 12px; overflow: hidden; }
         .data-table table { width: 100%; border-collapse: collapse; }
@@ -32,6 +40,10 @@
         .badge-completed { background: #60a5fa22; color: #60a5fa; border: 1px solid #60a5fa44; border-radius: 20px; padding: 3px 12px; font-size: 0.75rem; }
         .badge-stalled { background: #f59e0b22; color: #f59e0b; border: 1px solid #f59e0b44; border-radius: 20px; padding: 3px 12px; font-size: 0.75rem; }
         .badge-cancelled { background: #bb000022; color: #ff6b6b; border: 1px solid #bb000044; border-radius: 20px; padding: 3px 12px; font-size: 0.75rem; }
+
+        /* Insight banner */
+        .insight-bar { background: linear-gradient(90deg, #00660011, #0f2040); border-left: 3px solid #00ff88; border-radius: 0 12px 12px 0; padding: 14px 20px; margin: 20px 0; font-size: 0.9rem; color: #94a3b8; }
+        .insight-bar span { color: #00ff88; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -41,42 +53,73 @@
 <nav class="navbar navbar-dark">
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Coat_of_arms_of_Kenya.svg/120px-Coat_of_arms_of_Kenya.svg.png" height="48" style="margin-right: 14px;">
     <span class="navbar-brand">PUBLICPESA</span>
-    <a href="{% url 'homepage' %}" class="back-btn ms-auto">← BACK TO COUNTIES</a>
+    <a href="#" class="back-btn ms-auto">← BACK TO COUNTIES</a>
 </nav>
 
 <div class="county-hero">
-    <h1>📍 {{ county.name|upper }}</h1>
-    <p style="color: #64748b; letter-spacing: 2px; margin-top: 8px;">BUDGET TRANSPARENCY DASHBOARD</p>
+    <h1>📍 NAIROBI COUNTY</h1>
+    <p style="color: #64748b; letter-spacing: 2px; margin-top: 8px;">BUDGET TRANSPARENCY DASHBOARD · FY 2023/24</p>
 </div>
 
 <!-- Summary Stats -->
-<div class="container mb-4">
+<div class="container mb-2">
     <div class="row g-3">
         <div class="col-md-4">
             <div class="stat-card">
-                <div class="num">KES {{ county.budget_allocated|floatformat:0 }}</div>
+                <div class="num">KES 42.3B</div>
                 <div class="label">Budget Allocated</div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="stat-card">
-                <div class="num spent">KES {{ county.amount_spent|floatformat:0 }}</div>
+                <div class="num spent">KES 31.7B</div>
                 <div class="label">Amount Spent</div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="stat-card">
-                <div class="num gap">{{ county.percentage_spent|floatformat:1 }}%</div>
+                <div class="num gap">74.9%</div>
                 <div class="label">Budget Used</div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Chart -->
+<!-- Insight Banner -->
 <div class="container">
-    <div class="chart-wrapper">
-        <canvas id="budgetChart" height="100"></canvas>
+    <div class="insight-bar">
+        💡 <span>KES 10.6B unspent</span> — 25.1% of this year's budget was not utilized. Roads & Infrastructure sector has the highest unspent allocation.
+    </div>
+</div>
+
+<!-- Charts Grid -->
+<div class="container">
+    <div class="charts-grid">
+
+        <!-- Chart 1: Doughnut — Budget Used vs Remaining -->
+        <div class="chart-wrapper">
+            <h3>Budget Utilization</h3>
+            <canvas id="doughnutChart"></canvas>
+        </div>
+
+        <!-- Chart 2: Pie — Project Status -->
+        <div class="chart-wrapper">
+            <h3>Project Status Breakdown</h3>
+            <canvas id="statusChart"></canvas>
+        </div>
+
+        <!-- Chart 3: Horizontal Bar — Sector Spending (full width) -->
+        <div class="chart-wrapper chart-full">
+            <h3>Spending by Sector</h3>
+            <canvas id="sectorChart" height="80"></canvas>
+        </div>
+
+        <!-- Chart 4: Line — Monthly Spending Trend (full width) -->
+        <div class="chart-wrapper chart-full">
+            <h3>Monthly Spending Trend (FY 2023/24)</h3>
+            <canvas id="trendChart" height="80"></canvas>
+        </div>
+
     </div>
 </div>
 
@@ -95,15 +138,11 @@
                 </tr>
             </thead>
             <tbody>
-                {% for tender in tenders %}
-                <tr>
-                    <td>{{ tender.name }}</td>
-                    <td>{{ tender.company_awarded }}</td>
-                    <td>{{ tender.amount|floatformat:0 }}</td>
-                    <td>{{ tender.date_awarded }}</td>
-                    <td><span class="badge-{{ tender.status }}">{{ tender.status|upper }}</span></td>
-                </tr>
-                {% endfor %}
+                <tr><td>Thika Road Expansion Phase 2</td><td>China Road & Bridge Corp</td><td>4,200,000,000</td><td>2024-01-15</td><td><span class="badge-active">ACTIVE</span></td></tr>
+                <tr><td>Pumwani Hospital ICU Upgrade</td><td>Medisel Kenya Ltd</td><td>780,000,000</td><td>2023-11-03</td><td><span class="badge-completed">COMPLETED</span></td></tr>
+                <tr><td>Mathare Informal Settlement Drainage</td><td>Apex Contractors Ltd</td><td>320,000,000</td><td>2024-02-20</td><td><span class="badge-stalled">STALLED</span></td></tr>
+                <tr><td>Nairobi City Hall IT Infrastructure</td><td>Safaricom PLC</td><td>150,000,000</td><td>2023-10-01</td><td><span class="badge-completed">COMPLETED</span></td></tr>
+                <tr><td>Eastlands Public Schools Renovation</td><td>BuildRight Kenya</td><td>560,000,000</td><td>2024-03-10</td><td><span class="badge-active">ACTIVE</span></td></tr>
             </tbody>
         </table>
     </div>
@@ -123,14 +162,11 @@
                 </tr>
             </thead>
             <tbody>
-                {% for project in projects %}
-                <tr>
-                    <td>{{ project.name }}</td>
-                    <td>{{ project.location }}</td>
-                    <td>{{ project.cost|floatformat:0 }}</td>
-                    <td><span class="badge-{{ project.status }}">{{ project.status|upper }}</span></td>
-                </tr>
-                {% endfor %}
+                <tr><td>Kibera Water Supply Upgrade</td><td>Kibera, Lang'ata</td><td>250,000,000</td><td><span class="badge-active">ACTIVE</span></td></tr>
+                <tr><td>CBD Streetlighting Overhaul</td><td>Nairobi CBD</td><td>95,000,000</td><td><span class="badge-completed">COMPLETED</span></td></tr>
+                <tr><td>Ruiru-Githurai Road Rehabilitation</td><td>Ruiru, Githurai</td><td>1,100,000,000</td><td><span class="badge-stalled">STALLED</span></td></tr>
+                <tr><td>Westlands Market Reconstruction</td><td>Westlands</td><td>430,000,000</td><td><span class="badge-active">ACTIVE</span></td></tr>
+                <tr><td>Korogocho Health Centre</td><td>Korogocho, Kasarani</td><td>180,000,000</td><td><span class="badge-cancelled">CANCELLED</span></td></tr>
             </tbody>
         </table>
     </div>
@@ -139,27 +175,122 @@
 <div class="kenya-bar"></div>
 
 <script>
-    const ctx = document.getElementById('budgetChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'bar',
+    const chartDefaults = {
+        color: '#e2e8f0',
+        font: { family: 'Rajdhani', size: 13 }
+    };
+    Chart.defaults.color = chartDefaults.color;
+    Chart.defaults.font.family = chartDefaults.font.family;
+
+    // 1. Doughnut — Budget Utilization
+    new Chart(document.getElementById('doughnutChart'), {
+        type: 'doughnut',
         data: {
-            labels: ['Budget Allocated', 'Amount Spent'],
+            labels: ['Spent (KES 31.7B)', 'Remaining (KES 10.6B)'],
             datasets: [{
-                label: '{{ county.name }} Budget vs Expenditure',
-                data: [{{ county.budget_allocated }}, {{ county.amount_spent }}],
-                backgroundColor: ['#00660066', '#60a5fa66'],
-                borderColor: ['#006600', '#60a5fa'],
+                data: [31.7, 10.6],
+                backgroundColor: ['#60a5fa99', '#f59e0b44'],
+                borderColor: ['#60a5fa', '#f59e0b'],
                 borderWidth: 2,
-                borderRadius: 8,
+                hoverOffset: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            cutout: '68%',
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 16, color: '#94a3b8' } },
+                tooltip: { callbacks: { label: ctx => ` KES ${ctx.parsed}B` } }
+            }
+        }
+    });
+
+    // 2. Pie — Project Status
+    new Chart(document.getElementById('statusChart'), {
+        type: 'pie',
+        data: {
+            labels: ['Active', 'Completed', 'Stalled', 'Cancelled'],
+            datasets: [{
+                data: [18, 31, 7, 4],
+                backgroundColor: ['#00660055', '#60a5fa55', '#f59e0b55', '#bb000055'],
+                borderColor: ['#00ff88', '#60a5fa', '#f59e0b', '#ff6b6b'],
+                borderWidth: 2,
+                hoverOffset: 8
             }]
         },
         options: {
             responsive: true,
             plugins: {
-                legend: { labels: { color: '#e2e8f0', font: { family: 'Rajdhani' } } }
+                legend: { position: 'bottom', labels: { padding: 16, color: '#94a3b8' } },
+                tooltip: { callbacks: { label: ctx => ` ${ctx.parsed} projects` } }
+            }
+        }
+    });
+
+    // 3. Horizontal Bar — Sector Spending
+    new Chart(document.getElementById('sectorChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Roads & Infrastructure', 'Health', 'Education', 'Water & Sanitation', 'Agriculture', 'Housing', 'ICT & E-Gov'],
+            datasets: [
+                {
+                    label: 'Allocated (KES B)',
+                    data: [12.4, 8.1, 6.3, 5.0, 3.2, 4.6, 2.7],
+                    backgroundColor: '#00660044',
+                    borderColor: '#00ff88',
+                    borderWidth: 2,
+                    borderRadius: 6,
+                },
+                {
+                    label: 'Spent (KES B)',
+                    data: [7.8, 7.2, 5.1, 4.3, 2.6, 2.9, 1.8],
+                    backgroundColor: '#60a5fa44',
+                    borderColor: '#60a5fa',
+                    borderWidth: 2,
+                    borderRadius: 6,
+                }
+            ]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            plugins: {
+                legend: { position: 'top', labels: { color: '#94a3b8', padding: 16 } },
+                tooltip: { callbacks: { label: ctx => ` KES ${ctx.parsed.x}B` } }
             },
             scales: {
-                y: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
+                x: { ticks: { color: '#64748b', callback: v => `${v}B` }, grid: { color: '#1e293b' } },
+                y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
+            }
+        }
+    });
+
+    // 4. Line — Monthly Spending Trend
+    new Chart(document.getElementById('trendChart'), {
+        type: 'line',
+        data: {
+            labels: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Monthly Spend (KES B)',
+                data: [1.8, 2.1, 2.4, 2.9, 3.1, 4.2, 2.6, 2.8, 3.3, 2.5, 2.0, 2.0],
+                borderColor: '#00ff88',
+                backgroundColor: 'rgba(0,255,136,0.07)',
+                borderWidth: 2.5,
+                pointBackgroundColor: '#00ff88',
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                tension: 0.4,
+                fill: true,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { labels: { color: '#94a3b8' } },
+                tooltip: { callbacks: { label: ctx => ` KES ${ctx.parsed.y}B` } }
+            },
+            scales: {
+                y: { ticks: { color: '#64748b', callback: v => `${v}B` }, grid: { color: '#1e293b' } },
                 x: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
             }
         }
